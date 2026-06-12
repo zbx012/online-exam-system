@@ -12,9 +12,10 @@
 
 ### 1. 用户认证模块
 - 用户注册（学生 / 教师 / 管理员，支持三种角色）
-- 用户登录（JWT 令牌认证，有效期 24 小时）
-- 密码 MD5 加密存储
-- 个人信息查询与修改
+- 用户登录（JWT 令牌认证 + 拦截器强制校验，有效期 24 小时）
+- 用户登出（Token 加入 Redis 黑名单，即时失效）
+- 密码 BCrypt 加密存储
+- 个人信息查询与修改（含密码修改）
 - 用户删除
 - 管理员查看全部用户列表
 
@@ -69,7 +70,8 @@
 | **语言** | TypeScript | 5.9.x |
 | **HTTP 客户端** | Axios | 1.13.x |
 | **路由** | Vue Router | 4.x |
-| **密码加密** | Spring DigestUtils (MD5) | — |
+| **密码加密** | BCrypt (spring-security-crypto) | — |
+| **缓存** | Redis 7 (Docker) + Spring Data Redis | — |
 | **Java 版本** | JDK 1.8 | — |
 
 ---
@@ -85,7 +87,10 @@
 │       │   ├── java/com/example/project/
 │       │   │   ├── Application.java              # Spring Boot 启动类
 │       │   │   ├── config/
-│       │   │   │   └── CorsConfig.java           # CORS 跨域配置
+│       │   │   │   ├── CorsConfig.java           # CORS 跨域配置 + JWT 拦截器注册
+│       │   │   │   ├── JwtInterceptor.java       # JWT 认证拦截器（含黑名单检查）
+│       │   │   │   ├── GlobalExceptionHandler.java # 全局异常处理器
+│       │   │   │   └── RedisConfig.java          # Redis 序列化配置
 │       │   │   ├── utils/
 │       │   │   │   └── JwtUtils.java             # JWT 生成/验证工具类
 │       │   │   ├── entity/                       # 实体类
@@ -109,7 +114,8 @@
 │       │   │   │   ├── ExamService.java
 │       │   │   │   ├── QuestionService.java
 │       │   │   │   ├── ExamQuestionService.java
-│       │   │   │   └── ExamStudentService.java
+│       │   │   │   ├── ExamStudentService.java
+│       │   │   │   └── TokenBlacklistService.java # Token 黑名单（Redis）
 │       │   │   └── mapper/                       # MyBatis 映射层
 │       │   │       ├── UserMapper.java
 │       │   │       ├── ExamMapper.java
@@ -234,6 +240,7 @@
 | 更新用户 | PATCH | `/update` | `User`(JSON Body) | 更新后的 `User` | 含密码时会重新加密 |
 | 删除用户 | DELETE | `/delete` | `userName` | `"删除成功！"` | 按用户名删除 |
 | 获取全部用户 | GET | `/getAllUser` | — | `ArrayList<User>` | 管理员功能 |
+| 登出 | POST | `/logout` | `Authorization` Header | `{success, message}` | Token 加入 Redis 黑名单 |
 
 ### 二、考试管理模块 `/api/exam`
 
@@ -350,30 +357,35 @@ npm run dev
 ### 密码加密流程
 
 ```
-用户输入密码 → MD5 哈希(DigestUtils.md5DigestAsHex) → 存储密文到数据库
+用户输入密码 → BCrypt(BCryptPasswordEncoder) → 存储密文到数据库
 ```
 
-- **注册时**：对密码进行 MD5 加密后存入 `users.password`
-- **登录时**：对用户输入密码再次 MD5 加密，与数据库中哈希值比对
-- **更新时**：如传入新密码，自动重新加密后更新
+- **注册时**：使用 BCrypt 对密码进行哈希后存入 `users.password`
+- **登录时**：`BCryptPasswordEncoder.matches()` 验证密码
+- **更新时**：如传入新密码，自动 BCrypt 加密后更新
 
-> ⚠️ **改进建议**：MD5 已不再推荐用于密码存储，生产环境建议使用 BCrypt、SCrypt 或 Argon2。
-
-### JWT 认证流程
+### JWT + Redis 认证流程
 
 ```
 1. 用户登录成功 → 服务端生成 JWT Token（HS512 签名，24h 有效期）
-2. 前端存储 Token → 后续请求携带 Token
-3. 服务端验证 Token → 通过则放行，失败则返回 401
+2. 前端存储 Token → 后续请求自动携带 Authorization: Bearer <token>
+3. JwtInterceptor 拦截 /api/** 所有请求 → 校验 Token 有效性 → 查 Redis 黑名单
+4. 用户登出 → Token 写入 Redis 黑名单（24h 自动过期）
 ```
 
-> ⚠️ **改进建议**：当前 JWT 生成逻辑已完成，但接口层未强制校验 Token（已注释）。生产环境应引入拦截器/过滤器统一鉴权。
+### 题目查询缓存
+
+```
+查询题目 → 先查 Redis → 命中直接返回 → 未命中查 DB 并写入 Redis（30min TTL）
+增/删/改题目 → 自动清除对应缓存
+```
 
 ### 其他安全措施
 - **CORS 跨域配置**：开发环境开放了全部来源，生产环境需限制具体域名
 - **用户名唯一性**：数据库 `username` 字段设置了 UNIQUE 约束
 - **角色校验**：注册时限制 `user_type` 只能为 `student`、`teacher`、`admin` 三者之一
 - **SQL 注入防护**：使用 MyBatis 参数化查询（`#{}` 占位符），天然防注入
+- **全局异常处理**：GlobalExceptionHandler 统一返回 JSON 错误响应
 
 ---
 
