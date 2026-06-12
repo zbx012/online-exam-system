@@ -5,10 +5,7 @@ import { ElMessage } from 'element-plus'
 // 创建axios实例
 const service: AxiosInstance = axios.create({
   baseURL: 'http://localhost:8080', // 后端API地址
-  timeout: 15000, // 15秒超时
-  headers: {
-    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-  }
+  timeout: 15000 // 15秒超时
 })
 
 // 请求拦截器 — 自动添加 JWT Token
