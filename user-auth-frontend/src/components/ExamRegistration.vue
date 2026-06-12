@@ -22,7 +22,7 @@
           type="datetime"
           placeholder="选择开始时间"
           format="YYYY-MM-DD HH:mm:ss"
-          value-format="YYYY-MM-DD HH:mm:ss"
+          value-format="YYYY-MM-DDTHH:mm"
           style="width: 100%"
         />
       </el-form-item>
@@ -33,7 +33,7 @@
           type="datetime"
           placeholder="选择结束时间"
           format="YYYY-MM-DD HH:mm:ss"
-          value-format="YYYY-MM-DD HH:mm:ss"
+          value-format="YYYY-MM-DDTHH:mm"
           style="width: 100%"
         />
       </el-form-item>

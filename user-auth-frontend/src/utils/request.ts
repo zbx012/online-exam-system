@@ -11,7 +11,20 @@ const service: AxiosInstance = axios.create({
   }
 })
 
-// 请求拦截器
+// 请求拦截器 — 自动添加 JWT Token
+service.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
+
 // 响应拦截器中添加成功提示
 service.interceptors.response.use(
   (response: AxiosResponse) => {
