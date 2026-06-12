@@ -1,0 +1,23 @@
+# Node
+user-auth-frontend/node_modules/
+user-auth-frontend/dist/
+
+# Java
+webZbx/target/
+webZbx/.idea/
+*.class
+*.jar
+*.war
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 大文件（视频、PPT 等不适合放 git）
+*.mp4
+*.pptx
