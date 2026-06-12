@@ -70,7 +70,7 @@
 
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue'
-import axios from 'axios'
+import request from '@/utils/request'
 import { ElMessage } from 'element-plus'
 
 // 定义 props
@@ -185,7 +185,7 @@ const fetchUserInfo = async () => {
       return
     }
     
-    const response = await axios.get(`http://localhost:8080/api/auth/info?userName=${currentUsername}`)
+    const response = await request.get(`/api/auth/info?userName=${currentUsername}`)
     
     if (response.data) {
       userInfo.value = {
@@ -213,7 +213,7 @@ const updateUserInfo = () => {
       try {
         loading.value = true
         
-        const response = await axios.patch('http://localhost:8080/api/auth/update', {
+        const response = await request.patch('/api/auth/update', {
           username: userInfo.value.username,
           email: userInfo.value.email
         })
@@ -255,7 +255,7 @@ const updatePassword = async () => {
   try {
     loading.value = true
     
-    const response = await axios.patch('http://localhost:8080/api/auth/update', {
+    const response = await request.patch('/api/auth/update', {
       username: userInfo.value.username,
       password: passwordForm.value.newPassword
     })

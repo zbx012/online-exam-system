@@ -106,10 +106,10 @@ const breadcrumb = computed(() => {
   //userAvatar.value = userData.avatar
 //})
 onMounted(() => {
-  const currentUser = localStorage.getItem('currentUser')
-  if (currentUser) {
-    userName.value = currentUser
-  } else {
+  try {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}')
+    userName.value = currentUser.username || '学生用户'
+  } catch {
     userName.value = '学生用户'
   }
   userAvatar.value = ''

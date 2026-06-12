@@ -267,8 +267,8 @@
 
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import axios from 'axios'
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
+import request from '@/utils/request'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import ExamRegistration from '@/components/ExamRegistration.vue'
 
@@ -354,7 +354,7 @@ const fetchExams = async () => {
   
   loading.value = true
   try {
-    const response = await axios.get('http://localhost:8080/api/exam/selectByTeacherId', {
+    const response = await request.get('/api/exam/selectByTeacherId', {
       params: {
         teacherId: teacherId
       }
@@ -414,7 +414,7 @@ const saveExamEdit = () => {
           return
         }
         
-        const response = await axios.patch('http://localhost:8080/api/exam/update', {
+        const response = await request.patch('/api/exam/update', {
           examId: editForm.value.examId,
           examName: editForm.value.examName,
           startTime: editForm.value.startTime,
@@ -447,7 +447,7 @@ const deleteExam = (exam) => {
     }
   ).then(async () => {
     try {
-      const response = await axios.delete('http://localhost:8080/api/exam/delete', {
+      const response = await request.delete('/api/exam/delete', {
         params: {
           examId: exam.examId
         }
@@ -473,7 +473,7 @@ const viewStudents = async (exam) => {
   studentsDialogVisible.value = true
   
   try {
-    const response = await axios.get('http://localhost:8080/api/examStudent/selectByExam', {
+    const response = await request.get('/api/examStudent/selectByExam', {
       params: {
         examId: exam.examId
       }
@@ -493,7 +493,7 @@ const viewStudents = async (exam) => {
 // 更新学生成绩
 const updateStudentScore = async (student) => {
   try {
-    const response = await axios.patch('http://localhost:8080/api/examStudent/updateScore', {
+    const response = await request.patch('/api/examStudent/updateScore', {
       studentId: student.studentId,
       examId: currentExam.value.examId,
       score: student.score
@@ -516,7 +516,7 @@ const viewQuestions = async (exam) => {
   
   try {
     // 获取考试题目
-    const response = await axios.get('http://localhost:8080/api/examQuestion/selectQuestionsByExamId', {
+    const response = await request.get('/api/examQuestion/selectQuestionsByExamId', {
       params: {
         examId: exam.examId
       }
@@ -557,7 +557,7 @@ const confirmAddQuestion = async () => {
       return
     }
 
-    const response = await axios.post('http://localhost:8080/api/examQuestion/insert', {
+    const response = await request.post('/api/examQuestion/insert', {
       examId: currentExam.value.examId,
       questionId: addQuestionForm.value.questionId,
       orderNum: addQuestionForm.value.orderNum
@@ -608,9 +608,14 @@ const handleCurrentChange = (val) => {
   fetchExams()
 }
 
-// 组件挂载时获取数据
+// 组件挂载时获取数据，并监听考试创建事件
 onMounted(() => {
   fetchExams()
+  window.addEventListener('exam-created', fetchExams)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('exam-created', fetchExams)
 })
 </script>    
 

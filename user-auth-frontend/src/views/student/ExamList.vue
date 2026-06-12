@@ -237,7 +237,7 @@
 
 <script setup>
 import { ref, onMounted, computed, onBeforeUnmount } from 'vue'
-import axios from 'axios'
+import request from '@/utils/request'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useRouter } from 'vue-router'
 
@@ -318,7 +318,7 @@ const fetchSelectedExams = async () => {
   selectedLoading.value = true
   try {
     // 获取学生选课信息
-    const response = await axios.get('http://localhost:8080/api/examStudent/selectByStudent', {
+    const response = await request.get('/api/examStudent/selectByStudent', {
       params: {
         studentId: studentId
       }
@@ -331,7 +331,7 @@ const fetchSelectedExams = async () => {
       })
       
       // 获取考试详细信息
-      const examResponse = await axios.get('http://localhost:8080/api/exam/selectAll')
+      const examResponse = await request.get('/api/exam/selectAll')
       if (examResponse.data && Array.isArray(examResponse.data)) {
         // 过滤出已选的考试
         const selectedExamList = examResponse.data.filter(exam => 
@@ -359,7 +359,7 @@ const fetchSelectedExams = async () => {
 const fetchAllExams = async () => {
   allLoading.value = true
   try {
-    const response = await axios.get('http://localhost:8080/api/exam/selectAll')
+    const response = await request.get('/api/exam/selectAll')
     
     if (response.data && Array.isArray(response.data)) {
       allExams.value = response.data
@@ -395,7 +395,7 @@ const confirmSelectExam = async () => {
   }
   
   try {
-    const response = await axios.post('http://localhost:8080/api/examStudent/insert', null, {
+    const response = await request.post('/api/examStudent/insert', null, {
       params: {
         examId: selectedExamForDialog.value.examId,
         studentId: studentId
@@ -433,7 +433,7 @@ const dropCourse = (exam) => {
     }
     
     try {
-      const response = await axios.delete('http://localhost:8080/api/examStudent/delete', {
+      const response = await request.delete('/api/examStudent/delete', {
         params: {
           examId: exam.examId,
           studentId: studentId
@@ -465,14 +465,14 @@ const enterExam = async (exam) => {
   
   try {
     // 获取考试信息
-    const examResponse = await axios.get(`http://localhost:8080/api/exam/info?examId=${exam.examId}`)
+    const examResponse = await request.get(`/api/exam/info?examId=${exam.examId}`)
     if (examResponse.data) {
       currentExam.value = examResponse.data
     }
     
     // 获取考试题目
-    const questionResponse = await axios.get(
-      `http://localhost:8080/api/examQuestion/selectQuestionsByExamId?examId=${exam.examId}`
+    const questionResponse = await request.get(
+      `/api/examQuestion/selectQuestionsByExamId?examId=${exam.examId}`
     )
     
     if (questionResponse.data && Array.isArray(questionResponse.data)) {
@@ -490,8 +490,11 @@ const enterExam = async (exam) => {
       examSubmitted.value = false
       finalScore.value = 0
       
-      // 设置考试倒计时为固定90分钟(5400秒)
-      remainingTime.value = 90 * 60
+      // 根据考试实际结束时间计算剩余秒数
+      const endTime = new Date(exam.endTime || currentExam.value.endTime)
+      const now = new Date()
+      const computedRemaining = Math.max(0, Math.floor((endTime.getTime() - now.getTime()) / 1000))
+      remainingTime.value = computedRemaining
       
       // 启动倒计时
       startTimer()
@@ -567,8 +570,8 @@ const submitExam = () => {
         return
       }
       
-      const updateResponse = await axios.patch(
-        'http://localhost:8080/api/examStudent/updateScore',
+      const updateResponse = await request.patch(
+        '/api/examStudent/updateScore',
         {
           studentId: studentId,
           examId: currentExam.value.examId,

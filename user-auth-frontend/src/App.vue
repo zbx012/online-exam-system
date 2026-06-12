@@ -14,26 +14,6 @@
 
       <div v-if="isLoggedIn">
           <router-view />
-          <!-- 分割线 -->
-       
-          <div style="padding:20px">
-          <h3>测试图标组件</h3>
-           <div style="margin: 10px 0">
-              社区图标:<IconCommunity/>
-           </div>
-           <div style="margin: 10px 0">
-              工具图标:<IconTooling/>
-           </div>
-           <div style="margin: 10px 0">
-              支持图标:<IconSupport/>
-           </div>
-           <div style="margin: 10px 0">
-              生态图标:<IconEcosystem/>
-           </div>
-           <div style="margin: 10px 0">
-              文档图标:<IconDocumentation/>
-           </div>
-        </div>
       </div>
 
     <div v-else>
@@ -78,11 +58,6 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router' 
 import LoginForm from './components/LoginForm.vue'
 import RegisterForm from './components/RegisterForm.vue'
-import IconCommunity from './components/icons/IconCommunity.vue'
-import IconDocumentation from './components/icons/IconDocumentation.vue'
-import IconEcosystem from './components/icons/IconEcosystem.vue'
-import IconTooling from './components/icons/IconTooling.vue'
-import IconSupport from './components/icons/IconSupport.vue'
 
 
 

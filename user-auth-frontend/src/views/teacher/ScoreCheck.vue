@@ -189,7 +189,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import axios from 'axios'
+import request from '@/utils/request'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 // 数据
@@ -286,7 +286,7 @@ const getCurrentTeacherId = () => {
 const fetchQuestions = async () => {
   loading.value = true
   try {
-    const response = await axios.get('http://localhost:8080/api/question/selectAll')
+    const response = await request.get('/api/question/selectAll')
     
     if (response.data && Array.isArray(response.data)) {
       questions.value = response.data
@@ -309,7 +309,7 @@ const fetchTeacherExams = async () => {
   }
   
   try {
-    const response = await axios.get('http://localhost:8080/api/exam/selectByTeacherId', {
+    const response = await request.get('/api/exam/selectByTeacherId', {
       params: {
         teacherId: teacherId
       }
@@ -367,7 +367,7 @@ const addToExam = () => {
   addToExamFormRef.value.validate(async (valid) => {
     if (valid) {
       try {
-        const response = await axios.post('http://localhost:8080/api/examQuestion/insert', null, {
+        const response = await request.post('/api/examQuestion/insert', null, {
           params: {
             examId: addToExamForm.value.examId,
             questionId: addToExamForm.value.questionId,
@@ -420,7 +420,7 @@ const saveQuestion = () => {
             if (formData.score) updateData.score = formData.score
             if (formData.answer) updateData.answer = formData.answer
             
-            response = await axios.patch('http://localhost:8080/api/question/updateChoice', updateData)
+            response = await request.patch('/api/question/updateChoice', updateData)
           } else {
             // 编辑填空题
             const updateData = {
@@ -428,16 +428,16 @@ const saveQuestion = () => {
               score: formData.score,
               answer: formData.answer
             }
-            response = await axios.patch('http://localhost:8080/api/question/updateFill', updateData)
+            response = await request.patch('/api/question/updateFill', updateData)
           }
         } else {
           // 添加题目
           if (formData.type === 'CQ') {
             // 添加选择题
-            response = await axios.post('http://localhost:8080/api/question/addChoice', formData)
+            response = await request.post('/api/question/addChoice', formData)
           } else {
             // 添加填空题
-            response = await axios.post('http://localhost:8080/api/question/addFill', formData)
+            response = await request.post('/api/question/addFill', formData)
           }
         }
         
@@ -469,12 +469,12 @@ const deleteQuestion = (question) => {
       let response
       if (question.type === 'CQ') {
         // 删除选择题
-        response = await axios.delete('http://localhost:8080/api/question/deleteChoice', {
+        response = await request.delete('/api/question/deleteChoice', {
           params: { questionId: question.questionId }
         })
       } else {
         // 删除填空题
-        response = await axios.delete('http://localhost:8080/api/question/deleteFill', {
+        response = await request.delete('/api/question/deleteFill', {
           params: { questionId: question.questionId }
         })
       }

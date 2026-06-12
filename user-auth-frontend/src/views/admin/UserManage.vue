@@ -82,7 +82,7 @@
 
 <script>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import request from '@/utils/request'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 export default {
@@ -140,7 +140,7 @@ export default {
     const fetchAllUsers = async () => {
       loading.value = true
       try {
-        const response = await axios.get('http://localhost:8080/api/auth/getAllUser')
+        const response = await request.get('/api/auth/getAllUser')
         
         if (response.data && Array.isArray(response.data)) {
           allUsers.value = response.data
@@ -174,7 +174,7 @@ export default {
         }
       ).then(async () => {
         try {
-          const response = await axios.patch('http://localhost:8080/api/auth/update', {
+          const response = await request.patch('/api/auth/update', {
             username: row.username,
             password: '123456' //返回123456，让后端加密
           })
@@ -206,7 +206,7 @@ export default {
       passwordFormRef.value.validate(async (valid) => {
         if (valid) {
           try {
-            const response = await axios.patch('http://localhost:8080/api/auth/update', {
+            const response = await request.patch('/api/auth/update', {
               username: passwordForm.value.username,
               password: passwordForm.value.newPassword
             })
