@@ -91,18 +91,12 @@ public class ExamController {
     @GetMapping("/selectByTeacherId")
     public ResponseEntity<ArrayList<Exam>> selectByTeacherId(@RequestParam int teacherId) {
         try {
-            ArrayList<Exam> exams = examService.getAllExam();
-            if (exams != null) {
-                ArrayList<Exam> result = new ArrayList<>();
-                for (Exam exam : exams) {
-                    if (exam.getTeacherId()==teacherId) {
-                        result.add(exam);
-                    }
-                }
-                return ResponseEntity.ok(result);
+            ArrayList<Exam> exams = examService.getExamByTeacherId(teacherId);
+            if (exams != null && !exams.isEmpty()) {
+                return ResponseEntity.ok(exams);
             }
-            return ResponseEntity.notFound().build();
-        }catch(Exception e){
+            return ResponseEntity.ok(new ArrayList<>());
+        } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
     }
