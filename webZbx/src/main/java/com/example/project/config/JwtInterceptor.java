@@ -1,6 +1,8 @@
 package com.example.project.config;
 
+import com.example.project.service.TokenBlacklistService;
 import com.example.project.utils.JwtUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -9,10 +11,13 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * JWT 认证拦截器
- * 对所有 /api/** 请求进行 Token 校验（登录和注册接口除外）
+ * 对所有 /api/** 请求进行 Token 校验 + 黑名单检查
  */
 @Component
 public class JwtInterceptor implements HandlerInterceptor {
+
+    @Autowired
+    private TokenBlacklistService tokenBlacklistService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -39,6 +44,14 @@ public class JwtInterceptor implements HandlerInterceptor {
             response.setContentType("application/json;charset=UTF-8");
             response.setStatus(401);
             response.getWriter().write("{\"success\":false,\"message\":\"未登录，请先登录\"}");
+            return false;
+        }
+
+        // 检查 Token 是否在黑名单中（已登出）
+        if (tokenBlacklistService.isBlacklisted(token)) {
+            response.setContentType("application/json;charset=UTF-8");
+            response.setStatus(401);
+            response.getWriter().write("{\"success\":false,\"message\":\"Token 已失效，请重新登录\"}");
             return false;
         }
 

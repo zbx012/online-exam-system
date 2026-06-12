@@ -2,19 +2,23 @@ package com.example.project.controller;
 
 import com.example.project.dto.LoginResponse;
 import com.example.project.entity.User;
+import com.example.project.service.TokenBlacklistService;
 import com.example.project.service.UserService;
-import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 @RestController  // 声明这是一个REST API控制器
 @RequestMapping("/api/auth")  // 所有api的前缀
 public class AutoController {
-    @Autowired  // 自动注入UserService。单例、状态不可变的对象，自动管理其生命周期，不能用于实体类
+    @Autowired
     private UserService userService;
+
+    @Autowired
+    private TokenBlacklistService tokenBlacklistService;
 
 
     //用户注册api
@@ -117,6 +121,30 @@ public class AutoController {
         catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * 用户登出 — 将 Token 加入 Redis 黑名单
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<Map<String, Object>> logout(@RequestHeader(value = "Authorization", required = false) String authHeader) {
+        Map<String, Object> result = new java.util.HashMap<>();
+        try {
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring(7);
+                tokenBlacklistService.blacklist(token);
+                result.put("success", true);
+                result.put("message", "已退出登录");
+                return ResponseEntity.ok(result);
+            }
+            result.put("success", false);
+            result.put("message", "未找到有效的 Token");
+            return ResponseEntity.badRequest().body(result);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "登出失败");
+            return ResponseEntity.internalServerError().body(result);
         }
     }
 

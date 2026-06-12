@@ -114,13 +114,15 @@ onMounted(() => {
   }
   userAvatar.value = ''
 })
+import request from '@/utils/request'
+
 const handleCommand = async (command) => {
   if (command === 'profile') {
     router.push('/student/profile')
   } else if (command === 'logout') {
-    //await logout()
-    localStorage.removeItem('currentUser')
-    router.push('/login')
+    try { await request.post('/api/auth/logout') } catch {}
+    localStorage.clear()
+    router.push('/')
   }
 }
 </script>

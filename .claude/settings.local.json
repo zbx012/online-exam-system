@@ -1,7 +1,26 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit -m '前端代码规范化与功能完善 *)",
+      "Bash(npm install *)",
+      "Bash(node *)",
+      "Bash(python -c \"import bcrypt; print\\(bcrypt.hashpw\\(b'123456', bcrypt.gensalt\\(\\)\\).decode\\(\\)\\)\")",
+      "Bash(python3 -c \"import bcrypt; print\\(bcrypt.hashpw\\(b'123456', bcrypt.gensalt\\(\\)\\).decode\\(\\)\\)\")",
+      "Bash(python *)",
+      "Read(//c/Program Files/MySQL/**)",
+      "Read(//c/xampp/mysql/bin/**)",
+      "Read(//d//**)",
+      "Bash(C:/Program Files/MySQL/MySQL Server 5.7/bin/mysql.exe *)",
+      "Bash(git commit -m '修复：移除硬编码Content-Type，让axios自动根据数据类型设置 *)",
+      "Bash(git commit *)",
+      "Bash(git checkout *)",
+      "Bash(git merge *)",
+      "Bash(git stash *)",
+      "Bash(where redis-server *)",
+      "Read(//c/Program Files/Redis/**)",
+      "Bash(winget install *)",
+      "Bash(choco install *)"
     ]
   }
 }
