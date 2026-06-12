@@ -2,6 +2,7 @@
   "compilerOptions": {
     // ... 其他配置 ...
     "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
     "paths": {
       "@/*": ["src/*"],
       //"*": ["node_modules/*"]
