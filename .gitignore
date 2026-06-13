@@ -18,6 +18,9 @@ webZbx/.idea/
 .DS_Store
 Thumbs.db
 
+# Claude Code
+.claude/settings.local.json
+
 # 大文件（视频、PPT 等不适合放 git）
 *.mp4
 *.pptx
