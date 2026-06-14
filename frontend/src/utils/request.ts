@@ -4,7 +4,7 @@ import { ElMessage } from 'element-plus'
 //项目级Axios配置中心
 // 创建axios实例
 const service: AxiosInstance = axios.create({
-  baseURL: 'http://localhost:8080', // 后端API地址
+  baseURL: import.meta.env.PROD ? '' : 'http://localhost:8080', // 生产环境用相对路径，开发环境连本地后端
   timeout: 15000 // 15秒超时
 })
 
