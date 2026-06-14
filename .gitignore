@@ -1,10 +1,10 @@
 # Node
-user-auth-frontend/node_modules/
-user-auth-frontend/dist/
+frontend/node_modules/
+frontend/dist/
 
 # Java
-webZbx/target/
-webZbx/.idea/
+backend/target/
+backend/.idea/
 *.class
 *.jar
 *.war

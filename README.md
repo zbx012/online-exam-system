@@ -80,7 +80,7 @@
 
 ```
 在线考试系统大作业/
-├── webZbx/                          # 后端项目（Spring Boot）
+├── backend/                         # 后端项目（Spring Boot）
 │   ├── pom.xml                      # Maven 依赖配置
 │   └── src/
 │       ├── main/
@@ -128,7 +128,7 @@
 │       │       ├── application.properties        # 应用配置
 │       │       └── mapper/                       # MyBatis XML 映射文件
 │       └── test/                                 # 测试代码
-├── user-auth-frontend/              # 前端项目（Vue 3 + Element Plus）
+├── frontend/                        # 前端项目（Vue 3 + Element Plus）
 │   ├── package.json                 # Node 依赖配置
 │   ├── vite.config.ts               # Vite 构建配置（含代理配置）
 │   ├── index.html                   # 入口 HTML
@@ -305,16 +305,16 @@
 ### 2. 后端部署
 
 ```bash
-# 1. 克隆 / 进入后端项目目录
-cd webZbx
+# 1. 进入后端项目目录
+cd backend
 
 # 2. 导入数据库
 # 使用 MySQL 客户端执行 online_exam1.sql：
 mysql -u root -p < ../online_exam1.sql
 
 # 3. 修改数据库连接配置
-# 编辑 src/main/resources/application.properties
-# 设置数据库用户名和密码
+# 复制 application-local.yml.example 为 application-local.yml
+# 编辑填入你的数据库密码
 
 # 4. 使用 Maven 启动
 mvn spring-boot:run
@@ -326,7 +326,7 @@ mvn spring-boot:run
 
 ```bash
 # 1. 进入前端项目目录
-cd user-auth-frontend
+cd frontend
 
 # 2. 安装依赖
 npm install
@@ -434,8 +434,8 @@ Question (抽象基类)
 
 | 文件 | 说明 |
 |------|------|
-| `webZbx/` | 后端源代码（Spring Boot + MyBatis） |
-| `user-auth-frontend/` | 前端源代码（Vue 3 + Element Plus） |
+| `backend/` | 后端源代码（Spring Boot + MyBatis） |
+| `frontend/` | 前端源代码（Vue 3 + Element Plus） |
 | `online_exam1.sql` | 数据库建表脚本（含示例数据） |
 | `项目组实验报告.docx` | 课程实验报告 |
 | `实验报告补充.docx` | 实验报告补充材料 |
