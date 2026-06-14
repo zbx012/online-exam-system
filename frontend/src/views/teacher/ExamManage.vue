@@ -557,11 +557,12 @@ const confirmAddQuestion = async () => {
       return
     }
 
-    const response = await request.post('/api/examQuestion/insert', {
-      examId: currentExam.value.examId,
-      questionId: addQuestionForm.value.questionId,
-      orderNum: addQuestionForm.value.orderNum
-    })
+    // 后端用 @RequestParam，需要 URLSearchParams 格式
+    const formData = new URLSearchParams()
+    formData.append('examId', currentExam.value.examId)
+    formData.append('questionId', addQuestionForm.value.questionId)
+    formData.append('orderNum', addQuestionForm.value.orderNum)
+    const response = await request.post('/api/examQuestion/insert', formData)
     
     if (response.data) {
       ElMessage.success('题目添加成功')
