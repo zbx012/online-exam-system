@@ -26,7 +26,7 @@ class UserServiceTest {
         userService = new UserService();
         // 通过反射注入 mock 的 UserMapper
         try {
-            var field = UserService.class.getDeclaredField("userMapper");
+            java.lang.reflect.Field field = UserService.class.getDeclaredField("userMapper");
             field.setAccessible(true);
             field.set(userService, userMapper);
         } catch (Exception e) {
