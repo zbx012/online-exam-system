@@ -54,8 +54,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router' 
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import LoginForm from './components/LoginForm.vue'
 import RegisterForm from './components/RegisterForm.vue'
 
@@ -63,8 +63,24 @@ import RegisterForm from './components/RegisterForm.vue'
 
 //ref是Vue的响应api，声明一个响应式变量(其值改变会被vue监听，自动重新渲染依赖这个变量的模板），其值只能是其中一个，默认是login
 const activeForm = ref<'login' | 'register'>('login')
-const router= useRouter() 
+const router= useRouter()
 const isLoggedIn = ref(false)
+
+// 页面加载时检查 localStorage 是否有 token，有则自动登录
+onMounted(() => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    isLoggedIn.value = true
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}')
+    if (currentUser.type === 'teacher') {
+      router.push('/teacher/home')
+    } else if (currentUser.type === 'student') {
+      router.push('/student/home')
+    } else if (currentUser.type === 'admin') {
+      router.push('/admin/home')
+    }
+  }
+})
 const userEmail = ref('')
 // 在 handleLogin 成功后设置这些变量
 const handleLoginSuccess = () => {

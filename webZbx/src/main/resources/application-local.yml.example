@@ -1,0 +1,7 @@
+# 本地开发配置模板
+# 将此文件重命名为 application-local.yml，并填入你的数据库密码
+# application-local.yml 在 .gitignore 中，不会被提交
+
+spring:
+  datasource:
+    password: 你的数据库密码

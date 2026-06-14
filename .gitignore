@@ -21,6 +21,9 @@ Thumbs.db
 # Claude Code
 .claude/settings.local.json
 
+# 本地敏感配置（数据库密码等）
+**/application-local.yml
+
 # 大文件（视频、PPT 等不适合放 git）
 *.mp4
 *.pptx
