@@ -206,7 +206,7 @@
 
 | 表名 | 说明 | 核心字段 |
 |------|------|---------|
-| `users` | 用户表 | `user_id`(PK), `username`(UNIQUE), `password`(MD5), `email`, `user_type`(student/teacher/admin) |
+| `users` | 用户表 | `user_id`(PK), `username`(UNIQUE), `password`(BCrypt), `email`, `user_type`(student/teacher/admin) |
 | `exams` | 考试表 | `exam_id`(PK), `title`, `teacher_id`, `start_time`, `end_time`, `status`(draft/published/closed) |
 | `questions` | 题目公共表 | `question_id`(PK), `question_content`, `score`, `type`(CQ/FB/EQ) |
 | `choice_questions` | 选择题表 | `question_id`(PK/FK→questions), `optionA~D`, `answer` |
@@ -234,7 +234,7 @@
 
 | 接口 | 方法 | 路径 | 参数 | 返回值 | 说明 |
 |------|------|------|------|--------|------|
-| 注册 | POST | `/register` | `username`, `password`, `email`(可选), `type`(默认student) | `"注册成功！"` 或 `"注册失败：用户名已存在"` | 密码自动 MD5 加密 |
+| 注册 | POST | `/register` | `username`, `password`, `email`(可选), `type`(默认student) | `"注册成功！"` 或 `"注册失败：用户名已存在"` | 密码自动 BCrypt 加密 |
 | 登录 | POST | `/login` | `username`, `password` | `LoginResponse {success, message, token, user}` | 成功返回 JWT 令牌及用户信息 |
 | 获取用户信息 | GET | `/info` | `userName` | `User` 对象 | 按用户名查询 |
 | 更新用户 | PATCH | `/update` | `User`(JSON Body) | 更新后的 `User` | 含密码时会重新加密 |
@@ -348,7 +348,7 @@ npm run dev
 | `test01` | `123456` | 教师 | 可创建考试、管理题目 |
 | `test02` | `123456` | 学生 | 可查看考试、参加考试 |
 
-> 密码 "123456" 的 MD5 值为 `e10adc3949ba59abbe56e057f20f883e`。
+> 密码 "123456" 的 BCrypt 密文存储在数据库中，以上为预置测试账号。
 
 ---
 
