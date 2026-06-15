@@ -54,8 +54,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import LoginForm from './components/LoginForm.vue'
 import RegisterForm from './components/RegisterForm.vue'
 
@@ -63,6 +63,7 @@ import RegisterForm from './components/RegisterForm.vue'
 
 //ref是Vue的响应api，声明一个响应式变量(其值改变会被vue监听，自动重新渲染依赖这个变量的模板），其值只能是其中一个，默认是login
 const activeForm = ref<'login' | 'register'>('login')
+const route = useRoute()
 const router= useRouter()
 const isLoggedIn = ref(false)
 
@@ -97,13 +98,18 @@ const handleLoginSuccess = () => {
   router.push('/')
 }
 }
-// 在 handleLogout 时重置
-const handleLogout = () => {
-  isLoggedIn.value = false
-  userEmail.value = ''
-  localStorage.removeItem('userEmail')
-  localStorage.removeItem('currentUser')
-}
+// 监听路由变化，同步登录状态（修复退出登录后登录页空白的问题）
+watch(
+  () => route.path,
+  () => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      isLoggedIn.value = false
+      activeForm.value = 'login'
+    }
+  },
+  { immediate: true }
+)
 // 是否显示分割线（两个表单都显示时才显示），computed是计算属性。根据窗口宽度判断。
 const showDivider = computed(() => {
   return window.innerWidth > 768 // 在桌面端显示分割线
