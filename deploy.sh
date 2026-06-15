@@ -23,7 +23,7 @@ echo "  后端打包完成"
 # 3. 构建前端
 echo "[3/4] 构建前端..."
 cd "$PROJECT_DIR/frontend"
-npm run build --silent 2>/dev/null
+npx vite build --emptyOutDir --silent 2>/dev/null
 echo "  前端打包完成"
 
 # 4. 重启后端
